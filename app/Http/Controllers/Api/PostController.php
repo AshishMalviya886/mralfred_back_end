@@ -104,6 +104,25 @@ class PostController extends Controller
 
       }
    
+      public function show(Request $request, $id)
+      {
+
+        
+        try {
+            $user = $request->user();
+            $input = $request->all();
+
+            $post = $user->posts()->findOrFail($id);
+
+            return $this->successResponse(['message' => trans('message.post_get'), 'data' => new PostResource($post)]);
+    
+        } catch (\Exception $e) {
+            return $this->failResponse([
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+
+      }
 
 
 }
