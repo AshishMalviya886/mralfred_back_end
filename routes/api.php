@@ -32,6 +32,7 @@ Route::group(['prefix' => 'v1',  'namespace' => 'Api'], function(){
         Route::get('/', [App\Http\Controllers\Api\PostController::class, 'index']);
         Route::post('/', [App\Http\Controllers\Api\PostController::class, 'store']);    
         Route::get('{id}', [App\Http\Controllers\Api\PostController::class, 'show']);
+        Route::put('{id}', [App\Http\Controllers\Api\PostController::class, 'update']);
     });
 
 

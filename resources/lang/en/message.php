@@ -17,5 +17,6 @@ return [
     'logout_success' => 'User logged out successfully!',
     'post_added' => 'Post added successfully',
     'post_get' => 'Post details get successfully',
+    'post_updated' => 'Post updated successfully',
 
 ];

@@ -61,68 +61,108 @@ class PostController extends Controller
         unset($metaInfo['data']);
         return $this->successResponse(['data' => $collection, 'meta' => $metaInfo]);
 
-      }
+    }
 
-      public function store(Request $request, PostValidator $postValidator)
-      {
+    public function store(Request $request, PostValidator $postValidator)
+    {
 
-        
-        try {
-
-            DB::beginTransaction();
-
-            $user = $request->user();
-            $input = $request->all();
-
-
-            if (!$postValidator->with($input)->passes()) {
-                return $this->failResponse([
-                    "message" => $postValidator->getErrors()[0],
-                    "messages" => $postValidator->getErrors()
-                ], 422);
-            }
-          
-
-            $param =  [
-                'user_id' => $user->id,
-                'title' => $input['title'],
-                'description' => $input['description']                      
-            ];
-
-            $post = Post::create($param);
-            DB::commit();
-            return $this->successResponse(['message' => trans('message.post_added'), 'data' => new PostResource($post)]);
     
-        } catch (\Exception $e) {
-            DB::rollback();
+    try {
+
+        DB::beginTransaction();
+
+        $user = $request->user();
+        $input = $request->all();
+
+
+        if (!$postValidator->with($input)->passes()) {
             return $this->failResponse([
-                "message" => $e->getMessage(),
-            ], 500);
+                "message" => $postValidator->getErrors()[0],
+                "messages" => $postValidator->getErrors()
+            ], 422);
         }
-
-
-
-      }
-   
-      public function show(Request $request, $id)
-      {
-
         
-        try {
-            $user = $request->user();
-            $input = $request->all();
 
-            $post = $user->posts()->findOrFail($id);
+        $param =  [
+            'user_id' => $user->id,
+            'title' => $input['title'],
+            'description' => $input['description']                      
+        ];
 
-            return $this->successResponse(['message' => trans('message.post_get'), 'data' => new PostResource($post)]);
+        $post = Post::create($param);
+        DB::commit();
+        return $this->successResponse(['message' => trans('message.post_added'), 'data' => new PostResource($post)]);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return $this->failResponse([
+            "message" => $e->getMessage(),
+        ], 500);
+    }
+
+
+
+    }
+
+    public function show(Request $request, $id)
+    {
+
     
-        } catch (\Exception $e) {
+    try {
+        $user = $request->user();
+        $input = $request->all();
+
+        $post = $user->posts()->findOrFail($id);
+
+        return $this->successResponse(['message' => trans('message.post_get'), 'data' => new PostResource($post)]);
+
+    } catch (\Exception $e) {
+        return $this->failResponse([
+            "message" => $e->getMessage(),
+        ], 500);
+    }
+
+    }
+
+    public function update(Request $request, $id)
+    {
+
+    
+    try {
+
+        DB::beginTransaction();
+
+        $user = $request->user();
+        $input = $request->all();
+
+        $post = $user->posts()->findOrFail($id);
+
+        $postValidator = new PostValidator(); 
+
+        if (!$postValidator->with($input)->passes()) {
             return $this->failResponse([
-                "message" => $e->getMessage(),
-            ], 500);
+                "message" => $postValidator->getErrors()[0],
+                "messages" => $postValidator->getErrors()
+            ], 422);
         }
+        
 
-      }
+        $post->title = $input['title'];
+        $post->description = $input['description'];
+            
+        $post->save();             
+        DB::commit();
 
+
+        return $this->successResponse(['message' => trans('message.post_updated'), 'data' => new PostResource($post)]);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return $this->failResponse([
+            "message" => $e->getMessage(),
+        ], 500);
+    }
+
+    }
 
 }
