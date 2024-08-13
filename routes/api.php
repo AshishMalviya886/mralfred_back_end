@@ -29,7 +29,8 @@ Route::group(['prefix' => 'v1',  'namespace' => 'Api'], function(){
 
     
     Route::group(['prefix' => 'posts', 'middleware' => ['auth:api'] ], function() {
-        Route::get('/', [App\Http\Controllers\Api\PostController::class, 'index']);    
+        Route::get('/', [App\Http\Controllers\Api\PostController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\PostController::class, 'store']);    
     });
 
 

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
+use App\Validators\PostValidator;
+
 use App\Traits\ApiResponse;
 
 use App\Models\User;
@@ -59,9 +61,48 @@ class PostController extends Controller
         unset($metaInfo['data']);
         return $this->successResponse(['data' => $collection, 'meta' => $metaInfo]);
 
-
       }
 
+      public function store(Request $request, PostValidator $postValidator)
+      {
+
+        
+        try {
+
+            DB::beginTransaction();
+
+            $user = $request->user();
+            $input = $request->all();
+
+
+            if (!$postValidator->with($input)->passes()) {
+                return $this->failResponse([
+                    "message" => $postValidator->getErrors()[0],
+                    "messages" => $postValidator->getErrors()
+                ], 422);
+            }
+          
+
+            $param =  [
+                'user_id' => $user->id,
+                'title' => $input['title'],
+                'description' => $input['description']                      
+            ];
+
+            $post = Post::create($param);
+            DB::commit();
+            return $this->successResponse(['message' => trans('message.post_added'), 'data' => new PostResource($post)]);
+    
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $this->failResponse([
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+
+
+
+      }
    
 
 
