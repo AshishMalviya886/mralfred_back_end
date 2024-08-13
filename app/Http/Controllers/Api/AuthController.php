@@ -36,7 +36,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-
+        $this->middleware('auth:api')->only(['logout']);
     }
   
 
@@ -101,6 +101,22 @@ class AuthController extends Controller
         }
     }
 
+    public function logout(Request $request) {
+
+        try {
+            $token = $request->user()->token();
+            $token->revoke();
+            $response = [
+                'message'=> trans('message.logout_success')
+            ];
+            return $this->successResponse($response);
+        } catch (\Exception $e) {
+            return $this->failResponse([
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
 
     protected function getToken($request) {
       
