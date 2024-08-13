@@ -33,6 +33,7 @@ Route::group(['prefix' => 'v1',  'namespace' => 'Api'], function(){
         Route::post('/', [App\Http\Controllers\Api\PostController::class, 'store']);    
         Route::get('{id}', [App\Http\Controllers\Api\PostController::class, 'show']);
         Route::put('{id}', [App\Http\Controllers\Api\PostController::class, 'update']);
+        Route::delete('{id}', [App\Http\Controllers\Api\PostController::class, 'destroy']);
     });
 
 

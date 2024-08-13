@@ -18,5 +18,6 @@ return [
     'post_added' => 'Post added successfully',
     'post_get' => 'Post details get successfully',
     'post_updated' => 'Post updated successfully',
+    'post_deleted' => 'Post deleted successfully',
 
 ];

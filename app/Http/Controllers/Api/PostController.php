@@ -165,4 +165,30 @@ class PostController extends Controller
 
     }
 
+
+    public function destroy(Request $request,$id)
+    {
+
+        try {
+
+            DB::beginTransaction();
+
+            $user = $request->user();
+            $input = $request->all();
+
+            $post = $user->posts()->findOrFail($id);
+            $post->delete();             
+
+            DB::commit();
+
+            return $this->successResponse([ 'message' => trans('message.post_deleted')]);
+    
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $this->failResponse([
+                "message" => $e->getMessage(),
+            ], 500);
+        }    
+    }
+
 }
